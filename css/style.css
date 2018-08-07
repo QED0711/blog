@@ -6,6 +6,7 @@
 body{
     margin: 0;
     padding: 0;
+    background-color: var(--secondary-color);
 }
 
 .banner{
@@ -20,6 +21,11 @@ body{
 #post-body{
     max-width: 900px;
     margin: 0 auto;
+    margin-top: 5px;
+    border-radius: 8px;
+    background-color: rgb(236, 236, 236);
+    padding: 25px;
+    box-shadow: 2px 0 20px black;
 }
 
 section p {
@@ -27,7 +33,7 @@ section p {
 }
 
 .code-text{
-    background-color: rgb(175, 175, 175);
+    background-color: rgb(255, 165, 165);
     border-radius: 2px;
     padding: 0 2px;
 }
@@ -37,4 +43,13 @@ section p {
     border-radius: 10px;
     padding: 5px 10px;
     color: whitesmoke;
+    border: 2px solid rgb(168, 168, 168);
+}
+
+pre {
+    white-space: pre-wrap;       
+    white-space: -moz-pre-wrap;  
+    white-space: -pre-wrap;      
+    white-space: -o-pre-wrap;    
+    word-wrap: break-word;       
 }

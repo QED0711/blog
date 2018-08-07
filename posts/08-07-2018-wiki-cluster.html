@@ -26,6 +26,8 @@
                 This gem will scrape a given Wikipedia article and return a list of related articles that our user might want to read for further research. 
                 Let's get started!
             </p>
+
+            <p>Github Repository: <a href="https://github.com/QED0711/wiki_cluster-cli-app">https://github.com/QED0711/wiki_cluster-cli-app</a></p>
             <hr>
         </section>
 
@@ -49,16 +51,16 @@
 
             <p>
                 With all this in mind, we can start coding. 
-                Let's focus on three classes that will take on various responsibilities in out program.
+                Let's focus on three classes that will take on various responsibilities in our program.
                 <ul>
                     <li>
-                        <code class="code-text">Scraper</code>: This will be responsible for finding the relevant links in each article. Well be using the Nokogiri gem to help us with this. 
+                        <code class="code-text">Scraper</code>: This will be responsible for finding the relevant links in each article. We'll be using the Nokogiri gem to help us with this. 
                     </li>
                     <li>
                         <code class="code-text">Node</code>: We can think of each article as an instance of a node in this cluster we are creating. Each node will be responsible for knowing its base url, and for storing all the links of that url found by our scraper class.
                     </li>
                     <li>
-                        <code class="code-text">Cluster</code>: The cluster will represent the relationship between all these nodes, and will be responsible for collecting and counting the occurences of the scraped links from each node.
+                        <code class="code-text">Cluster</code>: The cluster will represent the relationship between all these nodes, and will be responsible for collecting and counting the occurrences of the scraped links from each node.
                     </li>
                 </ul>
             </p>
@@ -109,11 +111,11 @@ end
                 It would be nice if this just worked, but we need to take care of some edge cases.
                 Unfortunately, not every link within the article's paragraphs are actually links to other wikipedia articles.
                 We want to make sure that they stay within the same domain, so require each link to contain the substring, <code class="code-text">/wiki/</code>.
-                We also want to make sure that our links don't link to other Wikipedia pagesthat aren't articles. 
+                We also want to make sure that our links don't link to other Wikipedia pages that aren't articles. 
                 Excluding links with substrings containing a colon (:) or hash symbol (#) seems to take care of this. 
                 I arrived at this solution mostly through trial and error. 
                 Each time I added a new parameter to check, I would look over the returned links and make sure that they matched what I was looking for.
-                You could easily modify the code in the if statement to be more or less discerning to fit your particular needs!   I
+                You could easily modify the code in the if statement to be more or less discerning to fit your particular needs!
                 If each link passes these simple criteria, we map it to our return value, and move on to the next. 
             </p>
 
@@ -151,7 +153,7 @@ end
             <p>
                 Here is our <code class="code-text">Node</code> class.
                 It may seem rather simple, but remember, it is only responsible for knowing its url, and for storing any valid links are in the article.
-                Since the Scraper class takes care of all of the actuall scrapping, our node class only needs to hold onto that information. 
+                Since the Scraper class takes care of all of the actuall scraping, our node class only needs to hold onto that information. 
                 This is all accomplished in the initialize statement. 
                 Each node in our cluster is instantiated with a url. 
                 We pass that url to our scraper class, and let it do its magic.
@@ -198,11 +200,11 @@ end
             </div>
 
             <p>
-                Finally, our cluster class is responsible for managing the relationships between all our nodes (managing the cluster).
+                Finally, our Cluster class is responsible for managing the relationships between all our nodes (managing the cluster).
                 In order to return the most relevant links to our user, we need to know what links occured in our cluster the most.
                 Fortunatly, our node class has a record of all the links that we gathered!
                 By calling <code class="code-text">Node.all</code>, we get an array of all our node instances.
-                By itterating through each node instances <code class="code-text">@links</code> variable, we can get a complete record of all the links that we scraped!
+                By iterating through each node instances <code class="code-text">@links</code> variable, we can get a complete record of all the links that we scraped!
                 We can see this at work in the nested <code class="code-text">.each</code> calls.
             </p>
 
@@ -237,7 +239,7 @@ end
 
             <p>
                 Now that we have worked out our classes, all we have left to do is put them together in a logical flow.
-                We'll put everything in a <code class="code-text">CLI</code> class, which will bre responsible for creating and maintining the flow of the program.
+                We'll put everything in a <code class="code-text">CLI</code> class, which will be responsible for creating and maintining the flow of the program.
                 Because the CLI class is lengthy, and filled with control flow to manage user interaction, I won't include the entire file here. 
                 If you want to look through all the source code, visit the Github repo for this project linked above.
             </p>
@@ -299,7 +301,7 @@ end
                             Get the most prevelant (top 10 in this case) links from our generated cluster. Store in the variable, <code class="code-text">most_frequent</code>.
                         </li>
                         <li>
-                            For each link in the <code class="code-text">most_frequent</code> variable, print it out to the console for the user to puruse. 
+                            For each link in the <code class="code-text">most_frequent</code> variable, print it out to the console for the user to peruse. 
                         </li>
                     </ol>
                 </p>
@@ -327,6 +329,7 @@ end
                 </p>
 
                 <p>Thanks for reading! </p>
+                <p>-- Quinn Dizon</p>
         </section>
 
 
