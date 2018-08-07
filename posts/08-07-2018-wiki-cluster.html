@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="../css/style.css">
     <title>Document</title>
 </head>
+
 <body>
     <nav>
 
@@ -14,61 +16,67 @@
 
     <header class="banner">
         <h1>Wiki Cluster</h1>
-        <code><h3>Writing a Ruby Gem web scraper</h3></code>
+        <code><h3>Writing a Ruby Gem web scrapper</h3></code>
     </header>
 
     <main id="post-body">
-        
+
         <section class="introduction">
             <h2>Introduction:</h2>
             <p>
-                In this post, we're going to work through writing a simple ruby CLI. 
-                This gem will scrape a given Wikipedia article and return a list of related articles that our user might want to read for further research. 
-                Let's get started!
+                In this post, we're going to work through writing a simple ruby CLI. This gem will scrape a given Wikipedia article and return
+                a list of related articles that our user might want to read for further research. Let's get started!
             </p>
 
-            <p>Github Repository: <a href="https://github.com/QED0711/wiki_cluster-cli-app">https://github.com/QED0711/wiki_cluster-cli-app</a></p>
+            <p>Github Repository:
+                <a href="https://github.com/QED0711/wiki_cluster-cli-app">https://github.com/QED0711/wiki_cluster-cli-app</a>
+            </p>
             <hr>
         </section>
 
         <section class="content">
             <h4>How it Works:</h4>
             <p>
-                To achieve our goal, we'll need a program that can <code class="code-text">scrape</code> a base (<code class="code-text">Node</code>) article for all its links to other wikipedia articles.
-                Then, for each of those returned articles, we scrape all of their links to more wikipedia articles. 
-                We could keep heading down this particular rabbit hole until we have catalogued all of Wikipedia! 
-                To keep things simple, we'll just stop at this second level. 
+                To achieve our goal, we'll need a program that can
+                <code class="code-text">scrape</code> a base (
+                <code class="code-text">Node</code>) article for all its links to other wikipedia articles. Then, for each of those returned articles, we scrape
+                all of their links to more wikipedia articles. We could keep heading down this particular rabbit hole until
+                we have catalogued all of Wikipedia! To keep things simple, we'll just stop at this second level.
             </p>
 
             <p>
-                Once we have all these links, it's time for some simple processing. 
-                We need to count how many times a particular link occured in our <code class="code-text">cluster</code>.
-                Finally, with that information in hand, we return a list of links that appeared most frequently within our cluster. 
-                Simple as that! 
+                Once we have all these links, it's time for some simple processing. We need to count how many times a particular link occured
+                in our
+                <code class="code-text">cluster</code>. Finally, with that information in hand, we return a list of links that appeared most frequently within
+                our cluster. Simple as that!
             </p>
 
             <h4>The Setup:</h4>
 
             <p>
-                With all this in mind, we can start coding. 
-                Let's focus on three classes that will take on various responsibilities in our program.
+                With all this in mind, we can start coding. Let's focus on three classes that will take on various responsibilities in our
+                program.
                 <ul>
                     <li>
-                        <code class="code-text">Scraper</code>: This will be responsible for finding the relevant links in each article. We'll be using the Nokogiri gem to help us with this. 
+                        <code class="code-text">scrapper</code>: This will be responsible for finding the relevant links in each article. We'll be using the Nokogiri
+                        gem to help us with this.
                     </li>
                     <li>
-                        <code class="code-text">Node</code>: We can think of each article as an instance of a node in this cluster we are creating. Each node will be responsible for knowing its base url, and for storing all the links of that url found by our scraper class.
+                        <code class="code-text">Node</code>: We can think of each article as an instance of a node in this cluster we are creating. Each node
+                        will be responsible for knowing its base url, and for storing all the links of that url found by
+                        our scrapper class.
                     </li>
                     <li>
-                        <code class="code-text">Cluster</code>: The cluster will represent the relationship between all these nodes, and will be responsible for collecting and counting the occurrences of the scraped links from each node.
+                        <code class="code-text">Cluster</code>: The cluster will represent the relationship between all these nodes, and will be responsible for
+                        collecting and counting the occurrences of the scraped links from each node.
                     </li>
                 </ul>
             </p>
-            
+
             <hr>
 
             <p>
-                <code class="code-text">Scraper.rb</code>:
+                <code class="code-text">scrapper.rb</code>:
             </p>
             <div class="code-block">
                 <pre>
@@ -76,7 +84,7 @@
 require 'nokogiri'
 require 'open-uri'
 
-class Scraper
+class scrapper
     
     attr_reader :html
     
@@ -101,22 +109,23 @@ end
                 </pre>
             </div>
             <p>
-                As you can see, we are requiring nokogiri and open-uri at the top of the file. 
-                These allow us to make http requests, and parse HTML data.
+                As you can see, we are requiring nokogiri and open-uri at the top of the file. These allow us to make http requests, and
+                parse HTML data.
             </p>
             <p>
-                Moving on to the class itself, we can see that it is instantiated with a url, which we turn into parsable HTML with the help of open-uri. 
-                For now, we'll be mostly concerned with the <code class="code-text">links_from_node</code> instance method. 
-                This grabs all the links from the page by asking for all the <code class="code-text">a</code> tags within the main body paragraphs. 
-                It would be nice if this just worked, but we need to take care of some edge cases.
-                Unfortunately, not every link within the article's paragraphs are actually links to other wikipedia articles.
-                We want to make sure that they stay within the same domain, so require each link to contain the substring, <code class="code-text">/wiki/</code>.
-                We also want to make sure that our links don't link to other Wikipedia pages that aren't articles. 
-                Excluding links with substrings containing a colon (:) or hash symbol (#) seems to take care of this. 
-                I arrived at this solution mostly through trial and error. 
-                Each time I added a new parameter to check, I would look over the returned links and make sure that they matched what I was looking for.
-                You could easily modify the code in the if statement to be more or less discerning to fit your particular needs!
-                If each link passes these simple criteria, we map it to our return value, and move on to the next. 
+                Moving on to the class itself, we can see that it is instantiated with a url, which we turn into parsable HTML with the help
+                of open-uri. For now, we'll be mostly concerned with the
+                <code class="code-text">links_from_node</code> instance method. This grabs all the links from the page by asking for all the
+                <code class="code-text">a</code> tags within the main body paragraphs. It would be nice if this just worked, but we need to take care of
+                some edge cases. Unfortunately, not every link within the article's paragraphs are actually links to other
+                wikipedia articles. We want to make sure that they stay within the same domain, so require each link to contain
+                the substring,
+                <code class="code-text">/wiki/</code>. We also want to make sure that our links don't link to other Wikipedia pages that aren't articles. Excluding
+                links with substrings containing a colon (:) or hash symbol (#) seems to take care of this. I arrived at
+                this solution mostly through trial and error. Each time I added a new parameter to check, I would look over
+                the returned links and make sure that they matched what I was looking for. You could easily modify the code
+                in the if statement to be more or less discerning to fit your particular needs! If each link passes these
+                simple criteria, we map it to our return value, and move on to the next.
             </p>
 
             <hr>
@@ -126,7 +135,7 @@ end
             </p>
 
             <div class="code-block">
-                    <pre>
+                <pre>
                         <code>
 class Node
 
@@ -137,7 +146,7 @@ class Node
 
     def initialize(url)
         @url = url
-        @links = Scraper.new(@url).links_from_node
+        @links = scrapper.new(@url).links_from_node
         @@all << self
     end
 
@@ -151,15 +160,16 @@ end
             </div>
 
             <p>
-                Here is our <code class="code-text">Node</code> class.
-                It may seem rather simple, but remember, it is only responsible for knowing its url, and for storing any valid links are in the article.
-                Since the Scraper class takes care of all of the actuall scraping, our node class only needs to hold onto that information. 
-                This is all accomplished in the initialize statement. 
-                Each node in our cluster is instantiated with a url. 
-                We pass that url to our scraper class, and let it do its magic.
-                When our scrapper returns all the links at the given url, our node class just stores those in an instance variable called <code class="code-text">@links</code>.
-                Last, but very important, we store the node instance itself in the <code class="code-text">@@all</code> class variable.
-                If we didn't do this, we would have no way of comparing all the different links from the different nodes in our cluster! 
+                Here is our
+                <code class="code-text">Node</code> class. It may seem rather simple, but remember, it is only responsible for knowing its url, and for storing
+                any valid links are in the article. Since the scrapper class takes care of all of the actuall scraping, our
+                node class only needs to hold onto that information. This is all accomplished in the initialize statement.
+                Each node in our cluster is instantiated with a url. We pass that url to our scrapper class, and let it do
+                its magic. When our scrapper returns all the links at the given url, our node class just stores those in
+                an instance variable called
+                <code class="code-text">@links</code>. Last, but very important, we store the node instance itself in the
+                <code class="code-text">@@all</code> class variable. If we didn't do this, we would have no way of comparing all the different links from the
+                different nodes in our cluster!
             </p>
 
             <hr>
@@ -168,7 +178,7 @@ end
             </p>
 
             <div class="code-block">
-                    <pre>
+                <pre>
                         <code>
 class Cluster
 
@@ -200,37 +210,39 @@ end
             </div>
 
             <p>
-                Finally, our Cluster class is responsible for managing the relationships between all our nodes (managing the cluster).
-                In order to return the most relevant links to our user, we need to know what links occured in our cluster the most.
-                Fortunatly, our node class has a record of all the links that we gathered!
-                By calling <code class="code-text">Node.all</code>, we get an array of all our node instances.
-                By iterating through each node instances <code class="code-text">@links</code> variable, we can get a complete record of all the links that we scraped!
-                We can see this at work in the nested <code class="code-text">.each</code> calls.
+                Finally, our Cluster class is responsible for managing the relationships between all our nodes (managing the cluster). In
+                order to return the most relevant links to our user, we need to know what links occured in our cluster the
+                most. Fortunatly, our node class has a record of all the links that we gathered! By calling
+                <code class="code-text">Node.all</code>, we get an array of all our node instances. By iterating through each node instances
+                <code class="code-text">@links</code> variable, we can get a complete record of all the links that we scraped! We can see this at work in the
+                nested
+                <code class="code-text">.each</code> calls.
             </p>
 
             <p>
-                As we look through this set of links, we need to ask a simple question: have we seen this link before?
-                If so, we need to keep track of how many times we have seen it, and add 1 to its count. 
-                If not, we simply need to make note that we have seen it 1 time. 
-                A hash, where each key is a unique link, would be an excellent data structure for this.
-                We have defined an empty hash in the variable, <code class="code-text">node_count</code>. 
-                In the if statement, you can see that, as we move through the links, we keep a tally on what links we have seen, and how many times we have seen them.
+                As we look through this set of links, we need to ask a simple question: have we seen this link before? If so, we need to
+                keep track of how many times we have seen it, and add 1 to its count. If not, we simply need to make note
+                that we have seen it 1 time. A hash, where each key is a unique link, would be an excellent data structure
+                for this. We have defined an empty hash in the variable,
+                <code class="code-text">node_count</code>. In the if statement, you can see that, as we move through the links, we keep a tally on what links we have
+                seen, and how many times we have seen them.
             </p>
 
             <p>
-                We're almost there! 
-                While <code class="code-text">node_count</code> has all the information that we need to move on, it isn't organized. 
-                We need to order our data in such a way that it is easy to see which links appears most offten.
-                On the last line of the <code class="code-text">.frequency_hash</code> method, we sort the hash by value, and then reverse the returned array so that our most frequent links appear at the front of the array.
+                We're almost there! While
+                <code class="code-text">node_count</code> has all the information that we need to move on, it isn't organized. We need to order our data in such a
+                way that it is easy to see which links appears most offten. On the last line of the
+                <code class="code-text">.frequency_hash</code> method, we sort the hash by value, and then reverse the returned array so that our most frequent links appear
+                at the front of the array.
             </p>
 
             <p>
-                You'll notice that we have another class method, <code class="code-text">.top_ten_links</code>.
-                This method is arbitrary, in that it returns only the top ten most frequently occuring links in the cluster. 
-                This could have easily been .top_25_links!
-                I chose to stick with ten because it is easy for a user to comprehend. 
-                Too many links could become difficult for a user to make sense of. 
-                If you want more (or fewer) links in the return results, adjust the code: <code class="code-text">(0..9).map...</code> to your liking.
+                You'll notice that we have another class method,
+                <code class="code-text">.top_ten_links</code>. This method is arbitrary, in that it returns only the top ten most frequently occuring links in the cluster.
+                This could have easily been .top_25_links! I chose to stick with ten because it is easy for a user to comprehend.
+                Too many links could become difficult for a user to make sense of. If you want more (or fewer) links in the
+                return results, adjust the code:
+                <code class="code-text">(0..9).map...</code> to your liking.
             </p>
 
             <hr>
@@ -238,9 +250,10 @@ end
             <h4>Putting it All Together!</h4>
 
             <p>
-                Now that we have worked out our classes, all we have left to do is put them together in a logical flow.
-                We'll put everything in a <code class="code-text">CLI</code> class, which will be responsible for creating and maintining the flow of the program.
-                Because the CLI class is lengthy, and filled with control flow to manage user interaction, I won't include the entire file here. 
+                Now that we have worked out our classes, all we have left to do is put them together in a logical flow. We'll put everything
+                in a
+                <code class="code-text">CLI</code> class, which will be responsible for creating and maintining the flow of the program. Because the CLI class
+                is lengthy, and filled with control flow to manage user interaction, I won't include the entire file here.
                 If you want to look through all the source code, visit the Github repo for this project linked above.
             </p>
 
@@ -249,11 +262,11 @@ end
             </p>
 
             <p>
-                    <code class="code-text">CLI.rb</code>:
-                </p>
-    
-                <div class="code-block">
-                    <pre>
+                <code class="code-text">CLI.rb</code>:
+            </p>
+
+            <div class="code-block">
+                <pre>
                         <code>
 class CLI
 
@@ -283,57 +296,67 @@ end
 
                         </code>
                     </pre>
-                </div>
+            </div>
 
-                <p>
-                    While there is a lot more to the <code class="code-text">CLI.run</code> method than I have put in this post, this provides us with an understanding of how our classes each form an integral part of this program. 
-                    In a nutshell, here is the flow:
+            <p>
+                While there is a lot more to the
+                <code class="code-text">CLI.run</code> method than I have put in this post, this provides us with an understanding of how our classes each form
+                an integral part of this program. In a nutshell, here is the flow:
 
-                    <ol>
-                        <li>
-                            Instantiate a new instance of a <code class="code-text">Node</code> with a user specified URL.
-                            This instance will scrape all the links from the URL, and we'll store it in the varable <code class="code-text">root</code>.
-                        </li>
-                        <li>
-                            For each link in our node <code class="code-text">root</code> variable, we create a new node instance. Each instance will then scrape all the links from its URL, and will save itself in the Node class <code class="code-text">@@all</code> variable. 
-                        </li>
-                        <li>
-                            Get the most prevelant (top 10 in this case) links from our generated cluster. Store in the variable, <code class="code-text">most_frequent</code>.
-                        </li>
-                        <li>
-                            For each link in the <code class="code-text">most_frequent</code> variable, print it out to the console for the user to peruse. 
-                        </li>
-                    </ol>
-                </p>
+                <ol>
+                    <li>
+                        Instantiate a new instance of a
+                        <code class="code-text">Node</code> with a user specified URL. This instance will scrape all the links from the URL, and we'll store
+                        it in the varable
+                        <code class="code-text">root</code>.
+                    </li>
+                    <li>
+                        For each link in our node
+                        <code class="code-text">root</code> variable, we create a new node instance. Each instance will then scrape all the links from its URL,
+                        and will save itself in the Node class
+                        <code class="code-text">@@all</code> variable.
+                    </li>
+                    <li>
+                        Get the most prevelant (top 10 in this case) links from our generated cluster. Store in the variable,
+                        <code class="code-text">most_frequent</code>.
+                    </li>
+                    <li>
+                        For each link in the
+                        <code class="code-text">most_frequent</code> variable, print it out to the console for the user to peruse.
+                    </li>
+                </ol>
+            </p>
 
-                <hr>
+            <hr>
 
-                <h4>Conclusion:</h4>
+            <h4>Conclusion:</h4>
 
-                <p>
-                    And there you have it! The basic structure of a Wikipedia scraping Ruby Gem.
-                    If this sparked your interest, feel free to clone and play with the source code. 
-                    you can find the github repo <a href="https://github.com/QED0711/wiki_cluster-cli-app">here</a>.
-                    You'll notice that there are a few extra bits of code in the final version on github. 
-                    I implimented a <code class="code-text">#summary</code> method in the <code class="code-text">scraper class</code> that allows the user to preview a the contents of any of the returned articles.
-                    You'll also notice that there is some nice control flow in the <code class="code-text">CLI.run</code> method that allows the user to restart the search at any of the returned links.
-                </p>
+            <p>
+                And there you have it! The basic structure of a Wikipedia scraping Ruby Gem. If this sparked your interest, feel free to
+                clone and play with the source code. you can find the github repo
+                <a href="https://github.com/QED0711/wiki_cluster-cli-app">here</a>. You'll notice that there are a few extra bits of code in the final version on github. I implimented
+                a
+                <code class="code-text">#summary</code> method in the
+                <code class="code-text">scrapper class</code> that allows the user to preview a the contents of any of the returned articles. You'll also notice that
+                there is some nice control flow in the
+                <code class="code-text">CLI.run</code> method that allows the user to restart the search at any of the returned links.
+            </p>
 
-                <p>
-                    Wikepedia is a huge site with so much content. 
-                    This Gem should help users manage their reading with a little more ease! 
-                </p>
+            <p>
+                Wikepedia is a huge site with so much content. This Gem should help users manage their reading with a little more ease!
+            </p>
 
-                <p>
-                    If you think of other features that would be good in this CLI, send me a pull request! 
-                </p>
+            <p>
+                If you think of other features that would be good in this CLI, send me a pull request!
+            </p>
 
-                <p>Thanks for reading! </p>
-                <p>-- Quinn Dizon</p>
+            <p>Thanks for reading! </p>
+            <p>-- Quinn Dizon</p>
         </section>
 
 
-        
+
     </main>
 </body>
+
 </html>
